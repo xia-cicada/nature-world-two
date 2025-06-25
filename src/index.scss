@@ -1,0 +1,30 @@
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background-color: #282c34;
+  color: #abb2bf;
+}
+
+.screen-ctn {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.all-center {
+  display: grid;
+  place-items: center;
+}
+
+.sketch1 {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}

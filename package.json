@@ -1,0 +1,26 @@
+{
+  "name": "nature-world-two",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@solidjs/router": "^0.15.3",
+    "animejs": "^4.0.2",
+    "es-toolkit": "^1.39.3",
+    "kaplay": "^3001.0.18",
+    "solid-js": "^1.9.7",
+    "tweakpane": "^4.0.5"
+  },
+  "devDependencies": {
+    "@tweakpane/core": "^2.0.5",
+    "sass": "^1.89.2",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-solid": "^2.11.6"
+  }
+}
