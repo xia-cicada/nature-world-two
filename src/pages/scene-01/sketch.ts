@@ -12,6 +12,11 @@ export const sketch = (el: HTMLCanvasElement) => {
 
   ka.loadSprite('dinosaur', '/sprites/dinosaur.png', { singular: true })
   ka.loadSprite('fireBall', '/sprites/fire ball.png', { singular: true })
+  ka.loadSprite('tree0', '/public/sprites/tree.png', { singular: true })
+  ka.loadSprite('tree1', '/sprites/tree (1).png', { singular: true })
+  ka.loadSprite('tree2', '/sprites/tree (2).png', { singular: true })
+  ka.loadSprite('tree3', '/sprites/tree (3).png', { singular: true })
+  ka.loadSprite('tree4', '/sprites/tree (4).png', { singular: true })
 
   ka.loadShader(
     'shadow',
@@ -46,23 +51,89 @@ export const sketch = (el: HTMLCanvasElement) => {
   )
 
   ka.scene('one', () => {
-    const dinosaur = ka.add([
+    ka.setGravity(1000)
+    // ka.debug.inspect = true
+    const player = ka.add([
       ka.sprite('dinosaur', {
         width: 50,
       }),
-      ka.pos(80, 80),
+      ka.pos(80, ka.height() / 2),
       ka.shader('shadow'),
+      ka.area({ offset: ka.vec2(0, -7) }),
+      ka.body({ jumpForce: 300 }),
+      {
+        speed: 240, // 移动速度
+        canJump: false, // 跳跃状态
+      },
       'dinosaur',
       'dangerous',
       'big',
+      'player',
+      ka.z(1000),
     ])
+
+    player.onCollide('ground', () => {
+      player.canJump = true // 允许跳跃
+    })
+
+    player.onCollideEnd('ground', () => {
+      player.canJump = false
+    })
+
+    ka.onKeyDown('a', () => {
+      player.flipX = true
+      player.move(-player.speed, 0)
+    })
+
+    ka.onKeyDown('d', () => {
+      player.flipX = false
+      player.move(player.speed, 0)
+    })
+
+    ka.onKeyDown('space', () => {
+      if (player.canJump) {
+        player.jump(player.jumpForce) // 施加向上的冲量
+        player.canJump = false // 禁止连续跳跃
+      }
+    })
+
+    ka.onMousePress((key) => {
+      if (key === 'left') attack(player.flipX)
+    })
+
+    const ground = ka.add([
+      ka.rect(ka.width(), 20),
+      ka.color('#303030'),
+      ka.pos(0, ka.height() * 0.75),
+      ka.area(),
+      ka.body({ isStatic: true }),
+      'ground',
+      ka.z(900),
+    ])
+
+    const createTrees = () => {
+      const treeCount = 5
+      const treeInsCount = ka.randi(5, 15)
+      for (let i = 0; i < treeInsCount; i++) {
+        const distance = ka.randi(20, 60)
+        const treeIndex = ka.randi(treeCount)
+        const height = 120 - distance
+        ground.add([
+          ka.sprite(`tree${treeIndex}`, { height }),
+          ka.pos(ka.randi(ka.width()), -height + 5),
+          ka.z(90 - distance),
+        ])
+      }
+    }
+
+    createTrees()
 
     const attack = (isFlixX: boolean) => {
       let speed = 200
       const dir = isFlixX ? -1 : 1
-      const fire = dinosaur.add([
+      const fire = ka.add([
         ka.sprite('fireBall', { width: 30 }),
-        ka.pos(dir * 20 + 15, 0),
+        ka.pos(player.worldPos()!.x + dir * 20 + 15, player.worldPos()!.y),
         ka.shader('shadow'),
       ])
       fire.flipX = isFlixX
@@ -79,18 +150,9 @@ export const sketch = (el: HTMLCanvasElement) => {
       })
     }
 
-    ka.onKeyDown((key) => {
-      const speed = 100
-      const x = key === 'a' ? -speed : key === 'd' ? speed : 0
-      const y = key === 'w' ? -speed : key === 's' ? speed : 0
-      dinosaur.move(x, y)
-      if (x < 0) dinosaur.flipX = true
-      else if (x > 0) dinosaur.flipX = false
-    })
-
-    ka.onMousePress((m) => {
-      if (m === 'left') {
-        attack(dinosaur.flipX)
+    ka.onUpdate(() => {
+      if (player.vel.y > 1200) {
+        player.vel.y = 1200 // 限制最大下落速度
       }
     })
   })
